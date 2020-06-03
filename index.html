@@ -1,1 +1,286 @@
+<!DOCTYPE html>
+<html>
 
+<head>
+  <meta charset="UTF-8">
+  <title>PoliceMap - Stay safe!</title>
+  <!-- this application is designed as a single html page -->
+  <style>
+    body {
+      padding: 0;
+      margin: 0;
+      background-color: black;
+    }
+
+    html,
+    body,
+    #map {
+      height: 93vh;
+      width: 100vw;
+    }
+
+    #top {
+      height: 7vh;
+      width: 100vw;
+      background-color: black;
+      font-size: 20px;
+      line-height: 7vh;
+      font-family: Arial, Helvetica, sans-serif;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .report-popup {
+      font-size: 20px;
+      padding: 5px;
+      text-align: left;
+    }
+
+    .report-contents {
+      font-size: 16px;
+    }
+
+    .report-contents img {
+      max-height: 18vh;
+    }
+
+    h1 {
+      font-family: Arial, Helvetica, sans-serif;
+      color: white;
+    }
+
+    form {
+      text-align: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .form-container {
+      text-align: center;
+      width: 100%;
+    }
+
+    .submitcontainer {
+      padding-left: 4%;
+      width: 100%;
+      justify-content: center;
+    }
+
+    input[type=checkbox] {
+      display: none;
+    }
+
+    input[type=file] {
+      display: none;
+      border: solid 3px white;
+      line-height: 40px;
+      height: 70px;
+      width: 250px;
+      border-radius: 40px;
+
+      -webkit-font-smoothing: antialiased;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: larger;
+      color: greenyellow;
+      text-align: center;
+      background-color: black;
+      text-size-adjust: 10%;
+      align-self: center;
+      margin: 20px;
+      padding-top: 10px;
+      padding-bottom: 10px;
+    }
+
+    input[type=submit] {
+      border: solid 3px white;
+      line-height: 40px;
+      height: 70px;
+      width: 250px;
+      border-radius: 40px;
+
+      -webkit-font-smoothing: antialiased;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: larger;
+      color: greenyellow;
+      text-align: center;
+      background-color: black;
+      text-size-adjust: 10%;
+      padding-top: 10px;
+      padding-bottom: 10px;
+    }
+
+    p {
+      color: white;
+      font-size: 16px;
+      font-family: Arial, Helvetica, sans-serif;
+      text-align: left;
+      padding-left: 5px;
+      padding-right: 5px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    label {
+      display: block;
+      border: solid 3px white;
+      margin-left: auto;
+      margin-right: auto;
+      line-height: 40px;
+      height: 40px;
+      width: 250px;
+      border-radius: 40px;
+
+      -webkit-font-smoothing: antialiased;
+      margin-top: 10px;
+      font-family: Arial, Helvetica, sans-serif;
+      color: gray;
+      text-align: center;
+      font-size: larger;
+    }
+
+    input[type=checkbox] {
+      display: none;
+    }
+
+    button {
+      font-size: 18px;
+    }
+
+
+    input:checked+label {
+      border: solid 2px red;
+      color: #F00;
+    }
+
+    input.checkbox:checked+label:before {
+      content: "";
+    }
+
+    label {
+      color: white;
+      padding: 10px;
+    }
+
+
+    .pictureLabel {
+      color: white;
+    }
+  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
+  <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" />
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+
+<body>
+  <div id="top">
+    <div style="margin-left: 5px;">PoliceMap.net</div>
+    <div style="margin-right: 8px;"><button id="toggle">Report police violence</button></div>
+  </div>
+  <div id="map"></div>
+  <div style="height: 0;
+  overflow: hidden;" id="submitform">
+    <div class="form-container">
+      <h1 class="reportHeader">What Happened?</h1>
+      <form action="post">
+
+
+        <input type="checkbox" name="policeviolence" id="policeviolence">
+        <label for="policeviolence">Police Violence <span>👮‍♂️</span> </label>
+
+        <br>
+        <input type="checkbox" name="rubberbullets" id="rubberbullets">
+        <label for="rubberbullets">Rubber Bullets <span>🥽</span> </label>
+        <br>
+        <input type="checkbox" name="injury" id="injury">
+        <label for="injury">Serious Injury <span>🤕</span> </label>
+        <br>
+        <input type="checkbox" name="live-rounds" id="live-rounds">
+        <label for="live-rounds">Live Rounds<span>🏃</span> </label>
+        <br>
+        <input type="checkbox" name="teargas" id="teargas">
+        <label for="teargas">Tear Gas <span>💨</span></label>
+
+        <br>
+        <input type="checkbox" name="ketteling" id="ketteling">
+        <label for="ketteling">Kettling <span>🔒</span></label>
+
+        <br>
+        <input type="checkbox" name="lrad" id="lrad">
+        <label for="lrad">LRAD/Sound Cannon <span>🔊</span> </label>
+
+        <br>
+        <div class="h-captcha" data-sitekey="4639cdbc-413e-4d29-9e3b-5a06356f8715"></div>
+        <p style="max-width: 50%;">This captcha protects PoliceMap from bots and donates to Wikipedia.</p>
+        <div class="submitcontainer">
+          <input type="submit" name="submit" value="Submit" onclick="">
+        </div>
+      </form>
+      
+      <br><br><br>
+    </div>
+  </div>
+
+
+
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+  <script src="https://hcaptcha.com/1/api.js" async defer></script>
+  <script>
+    let mapView = true;
+    var map;
+
+
+
+
+    $(document).ready(() => {
+      map = L.map('map').setView({ lon: 0, lat: 0 }, 2);
+
+      // add the OpenStreetMap tiles
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap contributors</a>'
+      }).addTo(map);
+
+      // show the scale bar on the lower left corner
+      L.control.scale().addTo(map);
+
+      /* show a marker on the map
+      L.marker({ lon: -104.9689512, lat: 39.74845156 }).bindPopup(`
+    <div class="report-popup">
+      Tear gas
+      <div class="report-contents">
+        <img src="https://img.apmcdn.org/ff053766c7f427512bae1accc248182f117d6e23/uncropped/caaaa9-20200526-george-floyd-protest-cp-04.jpg"><br>
+        Tear gas reported <b>5 minutes ago</b>. <br>This marker will expire in <b>15 minutes</b>.
+      </div>
+      <button><i class="fa fa-thumbs-up" aria-hidden="true"></i> (232)</button>
+        <button><i class="fa fa-thumbs-down" aria-hidden="true"></i> (12)</button>
+    </div>
+    `).addTo(map);*/
+
+      map.locate({ setView: true, maxZoom: 16, enableHighAccuracy: true });
+      map.on('locationfound', () => {
+        map.setZoom(15);
+      })
+
+    });
+
+    $('#toggle').click(function () {
+      if (mapView) {
+        mapView = false;
+        $('#map').hide();
+        $('#submitform').css({ 'height': '100%', 'overflow': 'visible' });
+        $('#toggle').html('Back to map')
+      } else {
+        mapView = true;
+        $('#map').show();
+        $('#submitform').css({ 'height': '0', 'overflow': 'hidden' });
+        $('#toggle').html('Report police violence')
+      }
+    });
+
+
+  </script>
+</body>
+
+</html>
