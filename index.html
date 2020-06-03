@@ -258,6 +258,7 @@
 
 
     const clickReport = function (coords) {
+      mapView = false;
       $('#coords').attr('value', decodeURIComponent(coords))
       $('#map').hide();
       $('#submitform').css({ 'height': '100%', 'overflow': 'visible' });
